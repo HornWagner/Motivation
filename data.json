@@ -1,0 +1,114 @@
+{
+    "scaleSize": 10,
+    "isDualScale": false,
+    "categories": [
+        {
+            "name": "Macht",
+            "color": "#FF5733",
+            "options": [
+                {
+                    "name": "1: Entscheidungs-Gewalt",
+                    "description": "Die Fähigkeit, Entscheidungen zu treffen und durchzusetzen."
+                },
+                {
+                    "name": "2: Gestaltungs-Macht",
+                    "description": "Die Fähigkeit, Prozesse und Strukturen zu formen und zu beeinflussen."
+                },
+                {
+                    "name": "3: Deutungs-Hoheit",
+                    "description": "Die Fähigkeit, Bedeutungen und Narrative zu kontrollieren."
+                }
+            ]
+        },
+        {
+            "name": "Liebe",
+            "color": "#33C1FF",
+            "options": [
+                {
+                    "name": "1: Wertschätzung",
+                    "description": "Die Anerkennung und Achtung für eine Person."
+                },
+                {
+                    "name": "2: Anerkennung oder Lob",
+                    "description": "Die positive Rückmeldung und Bestätigung von Leistungen oder Eigenschaften."
+                },
+                {
+                    "name": "3: Respekt",
+                    "description": "Die Achtung vor den Rechten und Gefühlen anderer."
+                }
+            ]
+        },
+        {
+            "name": "Sinn",
+            "color": "#33FF57",
+            "options": [
+                {
+                    "name": "1: Nutzen",
+                    "description": "Der praktische Wert oder die Anwendbarkeit einer Sache."
+                },
+                {
+                    "name": "2: Mehrwert",
+                    "description": "Der zusätzliche Wert, der über den Grundnutzen hinausgeht."
+                },
+                {
+                    "name": "3: Impact (Nachhaltigkeit)",
+                    "description": "Die langfristigen Auswirkungen und Folgen einer Handlung oder Entscheidung."
+                }
+            ]
+        },
+        {
+            "name": "Sicherheit",
+            "color": "#FF33A8",
+            "options": [
+                {
+                    "name": "1: Der Existenz oder des Arbeitsplatzes",
+                    "description": "Die Gewissheit, dass die grundlegenden Lebensbedürfnisse gedeckt sind."
+                },
+                {
+                    "name": "2: Durch die Gemeinschaft",
+                    "description": "Das Gefühl der Zugehörigkeit und Unterstützung durch soziale Netzwerke."
+                },
+                {
+                    "name": "3: Vor Gefährdungen jeder Art",
+                    "description": "Der Schutz vor physischen, emotionalen oder finanziellen Bedrohungen."
+                }
+            ]
+        },
+        {
+            "name": "Genuss",
+            "color": "#FFC133",
+            "options": [
+                {
+                    "name": "1: Hedonismus",
+                    "description": "Der Genuss von körperlichen Freuden und sinnlichen Erfahrungen."
+                },
+                {
+                    "name": "2: Ästhetik",
+                    "description": "Der Genuss von Schönheit und künstlerischen Ausdrucksformen."
+                },
+                {
+                    "name": "3: Funktionalität",
+                    "description": "Der Genuss von praktischen und nützlichen Dingen, die das Leben erleichtern."
+                }
+            ]
+        },
+        {
+            "name": "Reifung",
+            "color": "#8E33FF",
+            "options": [
+                {
+                    "name": "1: Entwicklung oder Verbesserung",
+                    "description": "Die Entwicklung und Verbesserung der eigenen Fähigkeiten und Eigenschaften."
+                },
+                {
+                    "name": "2: Wachstum",
+                    "description": "Die Erweiterung des eigenen Horizonts und der Perspektiven."
+                },
+                {
+                    "name": "3: Aufstieg",
+                    "description": "Das Erreichen höherer Positionen oder Status in der Gesellschaft."
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,400 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: sans-serif;
+}
+
+/**
+  * App Container, everything else is inside this
+  */
+
+.appContainer {
+  width: 100%;
+  height: 100%;
+  max-width: 100vw;
+  max-height: 100vh;
+  background: #f4f4f4;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  display: grid;
+}
+
+/**
+  * Canvas and Controls Styles
+  */
+
+.appCanvas {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.appControls {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  grid-column: 1;
+  grid-row: 1;
+  pointer-events: none;
+}
+
+.topControls {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 10px;
+  z-index: 2;
+}
+
+
+/**
+  * Top Right UI Styles
+  */
+
+.icon-button {
+  width: 60px;
+  height: 60px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.icon-button img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+.icon-button:hover img {
+  transform: scale(1.2);
+}
+
+#profileButtonsList {
+  display: flex;
+  flex-direction: column;
+  width: max-content;
+
+  position: absolute;
+  top: 80px;
+  right: 20px;
+  bottom: 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#profileButtons {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/**
+  * Profile UI Styles
+  */
+
+.profile-ui-wrapper {
+  display: flex;
+  width: 100%;
+}
+
+.profile-ui {
+  display: flex;
+  align-items: center;
+  width: 250px;
+  margin-left: auto;
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  padding-right: 0;
+  transition: width 0.3s ease, box-shadow 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.profile-ui.expanded,
+.profile-ui.active {
+  width: 300px;
+}
+
+.profile-ui.active {
+  border-color: black;
+}
+
+.profile-ui .color-box {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 4px 0 0 4px;
+}
+
+.profile-ui .text-field {
+  border: none;
+  outline: none;
+  padding: 8px;
+  font-size: 18px;
+  flex: 1;
+  min-width: 80px;
+  max-width: 150px;
+}
+
+.profile-ui .icons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.profile-ui .icons button {
+  opacity: 0;
+  pointer-events: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  transition: opacity 0.3s ease;
+}
+
+.profile-ui.expanded .icons button,
+.profile-ui.active .icons button,
+.profile-ui .icons button.always-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.profile-ui .icons img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+.profile-ui .icons button:hover img {
+  transform: scale(1.2);
+}
+
+.profile-ui-print-element {
+  display: grid;
+  align-items: center;
+  width: 100%;
+  margin-left: auto;
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  padding-right: 0;
+  border: 2px solid transparent;
+}
+
+.profile-ui-print-element .color-box {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 8px 8px 8px 8px;
+  grid-row: 0;
+  grid-column: 0;
+}
+
+.profile-ui-print-element .text-field {
+  border: none;
+  outline: none;
+  padding: 8px;
+  font-size: 18px;
+  min-width: 80px;
+  max-width: 150px;
+  grid-row: 0;
+  grid-column: 1;
+}
+
+.profile-ui-print-element {
+  display: none;
+}
+
+.profile-ui-wrapper.print-mode>* {
+  display: none;
+}
+
+.profile-ui-wrapper.print-mode .profile-ui-print-element {
+  display: block !important;
+}
+
+/**
+  * Category UI Styles
+  */
+
+.category-ui-container,
+.category-ui-label {
+  pointer-events: auto;
+}
+
+.category-ui-center-label {
+  pointer-events: none;
+}
+
+.category-ui-container {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+}
+
+.category-ui-center-label {
+  position: absolute;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 8px;
+  padding: 6px 8px;
+  background: #b6b6b6be;
+  color: #1a1a1a;
+  font-weight: 600;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.category-ui-print-label {
+  position: absolute;
+  z-index: 1;
+  border-radius: 8px;
+  padding: 6px 8px;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.category-ui-canvas {
+  z-index: 0;
+  background: transparent;
+  display: block;
+}
+
+.category-ui-label {
+  position: absolute;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  border-radius: 8px;
+  width: 60px;
+  overflow: hidden;
+  text-align: center;
+  padding: 6px 8px;
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+  line-height: 1.3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition:
+    width 0.6s ease,
+    background-color 0.25s ease,
+    padding 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+}
+
+.category-ui-label .title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  font-weight: 600;
+}
+
+.category-ui-label .description {
+  opacity: 0;
+  font-size: 14px;
+  margin-top: 4px;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.25s ease, max-height 0.25s ease;
+}
+
+.category-ui-label.expanded {
+  width: 200px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  transform: translate(-50%, -50%) scale(1.05);
+  z-index: 999;
+}
+
+.category-ui-label.expanded .description {
+  opacity: 0.85;
+  max-height: 200px;
+}
+
+.category-ui-container .category-ui-print-label {
+  display: none;
+}
+
+.category-ui-container.print-mode>* {
+  display: none;
+}
+
+.category-ui-container.print-mode .category-ui-print-label {
+  display: block !important;
+}
+
+/**
+* Tutorial UI Styles
+*/
+
+.tutorial-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: none;
+  z-index: 9999;
+}
+
+.tutorial-highlight-box {
+  position: fixed;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+  transition: all 0.4s ease;
+}
+
+.tutorial-tooltip {
+  position: fixed;
+  background: white;
+  color: black;
+  padding: 1rem;
+  border-radius: 8px;
+  max-width: 280px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.4s ease;
+}
+
+.tutorial-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+}
+
+.tutorial-buttons button {
+  background: #007bff;
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.tutorial-buttons button:hover {
+  background: #0056b3;
+}

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Motivations-Mehreck</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div id="appContainer" class="appContainer">
+    <canvas id="appCanvas" class="appCanvas"></canvas>
+
+    <div id="appControls" class="appControls"></div>
+
+    <div id="topControls" class="topControls">
+      <button id="tutorialButton" class="icon-button">
+        <img src="resources/tutorial_icon.png" alt="Zeige Anleitungen">
+      </button>
+      <button id="loadButton" class="icon-button">
+        <img src="resources/load_icon.png" alt="Lade Profile und Daten">
+      </button>
+      <button id="saveButton" class="icon-button">
+        <img src="resources/save_icon.png" alt="Speichere Profile und Daten">
+      </button>
+      <button id="imageButton" class="icon-button">
+        <img src="resources/image_icon.png" alt="Speichere Screenshot">
+      </button>
+      <button id="addButton" class="icon-button">
+        <img src="resources/create_profile_icon.png" alt="Profil hinzufügen">
+      </button>
+    </div>
+
+    <div id="profileButtonsList">
+      <div id="profileButtons"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
