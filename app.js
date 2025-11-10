@@ -25,12 +25,14 @@ const Constants = {
  * Global Variables
  */
 
+const appContainer = document.getElementById("appContainer");
 const appCanvas = document.getElementById("appCanvas");
 const tutorialButton = document.getElementById("tutorialButton");
 const loadButton = document.getElementById("loadButton");
 const saveButton = document.getElementById("saveButton");
 const imageButton = document.getElementById("imageButton");
 const addButton = document.getElementById("addButton");
+const resizeObserver = new ResizeObserver(onResize);
 let activeButton = null;
 let categoryButtons = [];
 let categoryAngles = [];
@@ -65,8 +67,6 @@ let currentProfileID = 0;
 /**
 *   Setup
 */
-appCanvas.width = appCanvas.offsetWidth;
-appCanvas.height = appCanvas.offsetHeight;
 
 fetch('./data.json')
     .then(result => result.json())
@@ -146,13 +146,7 @@ fetch('./data.json')
     })
     .catch(error => console.error('Error loading JSON:', error));
 
-window.addEventListener("resize", e => {
-    onResize();
-});
-
-screen.addEventListener("change", e => {
-    onResize();
-});
+resizeObserver.observe(appContainer);
 
 appCanvas.addEventListener("mousedown", e => {
     onInputDown(e.clientX, e.clientY, 0);
@@ -293,8 +287,8 @@ function clearProfiles() {
  */
 
 function onResize() {
-    appCanvas.width = appCanvas.offsetWidth;
-    appCanvas.height = appCanvas.offsetHeight;
+    appCanvas.width = appContainer.clientWidth;
+    appCanvas.height = appContainer.clientHeight;
 
     for (let i = 0; i < categoryCount; i++) {
         let angle = getCategoryAngle(i, categoryCount);
@@ -843,13 +837,6 @@ async function saveAsImage() {
     const html2canvas = await loadHtml2Canvas();
     const swal = await loadSweetAlert2();
 
-    const element = document.getElementById("appContainer");
-
-    if (!element) {
-        console.error("App container not found.");
-        return;
-    }
-
     function setPrintMode(isPrintMode) {
         for (const categoryButton of categoryButtons) {
             if (categoryButton == null)
@@ -873,12 +860,12 @@ async function saveAsImage() {
 
     setPrintMode(true);
 
-    const canvas = await html2canvas(element, {
+    const canvas = await html2canvas(appContainer, {
         backgroundColor: '#ffffff',
         useCORS: true,
         scale: 2,
-        ignoreElements: (el) => {
-            return el.className === "topControls";
+        ignoreElements: (element) => {
+            return element.className === "topControls";
         }
     });
 
