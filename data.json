@@ -4,7 +4,7 @@
     "categories": [
         {
             "name": "Macht",
-            "color": "#FF5733",
+            "color": "#4343DB",
             "options": [
                 {
                     "name": "1: Entscheidungs-Gewalt",
@@ -22,7 +22,7 @@
         },
         {
             "name": "Liebe",
-            "color": "#33C1FF",
+            "color": "#E54444",
             "options": [
                 {
                     "name": "1: Wertschätzung",
@@ -40,7 +40,7 @@
         },
         {
             "name": "Sinn",
-            "color": "#33FF57",
+            "color": "#45E045",
             "options": [
                 {
                     "name": "1: Nutzen",
@@ -58,7 +58,7 @@
         },
         {
             "name": "Sicherheit",
-            "color": "#FF33A8",
+            "color": "#44DDDD",
             "options": [
                 {
                     "name": "1: Der Existenz oder des Arbeitsplatzes",
@@ -76,7 +76,7 @@
         },
         {
             "name": "Genuss",
-            "color": "#FFC133",
+            "color": "#D843D8",
             "options": [
                 {
                     "name": "1: Hedonismus",
@@ -94,7 +94,7 @@
         },
         {
             "name": "Reifung",
-            "color": "#8E33FF",
+            "color": "#E2E244",
             "options": [
                 {
                     "name": "1: Entwicklung oder Verbesserung",

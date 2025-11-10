@@ -2,17 +2,24 @@
  * Settings, UI constants
  */
 
-const settings = {
+const Settings = {
     showLinesBetweenDataPoints: true,
     scaleLineSmoothing: 0.0
 }
 
-const categoryUISize = 120;
-const handleRadiusNormal = 10;
-const handleRadiusHovered = 13;
-const lineSizeCurrentProfile = 8;
-const lineSizeOtherProfiles = 6;
-const handleRadiusOtherProfiles = 8;
+const Constants = {
+    get CATEGORY_UI_SIZE() { return remToPx(9); },
+    get HANDLE_RADIUS_NORMAL() { return remToPx(0.8); },
+    get HANDLE_RADIUS_HOVERED() { return remToPx(1.0); },
+    get LINE_SIZE_CURRENT_PROFILE() { return remToPx(0.6); },
+    get LINE_SIZE_OTHER_PROFILE() { return remToPx(0.4); },
+    get HANDLE_RADIUS_OTHER_PROFILE() { return remToPx(0.5); },
+    get LINE_SIZE_SCALE() { return remToPx(0.15); },
+    get LINE_SIZE_MAIN_SCALE() { return remToPx(0.3); },
+    get LINE_SIZE_CORNER() { return remToPx(0.4); },
+    get CORNER_INDICATOR_RADIUS() { return remToPx(0.5); },
+    get CATEGORY_UI_LINE_SIZE() { return remToPx(0.3); }
+}
 
 /**
  * Global Variables
@@ -25,9 +32,9 @@ const saveButton = document.getElementById("saveButton");
 const imageButton = document.getElementById("imageButton");
 const addButton = document.getElementById("addButton");
 let activeButton = null;
-let profileCount = 0;
 let categoryButtons = [];
 let categoryAngles = [];
+let profileUIElements = [];
 let isMainLoopRunning = false;
 let tutorial = null;
 
@@ -107,11 +114,11 @@ fetch('./data.json')
             }
 
             let angle = getCategoryAngle(i, categoryCount);
-            let radius = getGraphRadius(appCanvas) + categoryUISize * 1.1;
+            let radius = getGraphRadius(appCanvas) + Constants.CATEGORY_UI_SIZE * 1.1;
             let x = appCanvas.width / 2 + Math.cos(angle) * radius;
             let y = appCanvas.height / 2 + Math.sin(angle) * radius;
 
-            let button = createCategoryUI(x, y, categoryUISize, radToDeg(angle) + 180, category.color, [
+            let button = createCategoryUI(x, y, Constants.CATEGORY_UI_SIZE, radToDeg(angle) + 180, category.color, [
                 { title: category.options[0].name, description: category.options[0].description },
                 { title: category.options[1].name, description: category.options[1].description },
                 { title: category.options[2].name, description: category.options[2].description }
@@ -131,24 +138,20 @@ fetch('./data.json')
         for (let i = 0; i < categoryCount; i++)
             categoryAngles.push(getCategoryAngle(i, categoryCount));
 
+        const sessionData = sessionStorage.getItem("projectData");
+        if (sessionData)
+            loadProject(JSON.parse(sessionData));
+
         draw();
     })
     .catch(error => console.error('Error loading JSON:', error));
 
 window.addEventListener("resize", e => {
-    appCanvas.width = appCanvas.offsetWidth;
-    appCanvas.height = appCanvas.offsetHeight;
+    onResize();
+});
 
-    for (let i = 0; i < categoryCount; i++) {
-        let angle = getCategoryAngle(i, categoryCount);
-        let radius = getGraphRadius(appCanvas) + categoryUISize * 1.1;
-        let x = appCanvas.width / 2 + Math.cos(angle) * radius;
-        let y = appCanvas.height / 2 + Math.sin(angle) * radius;
-
-        categoryButtons[i].setPosition(x, y, radToDeg(angle) + 180);
-    }
-
-    draw();
+screen.addEventListener("change", e => {
+    onResize();
 });
 
 appCanvas.addEventListener("mousedown", e => {
@@ -161,6 +164,11 @@ appCanvas.addEventListener("mousemove", e => {
 
 appCanvas.addEventListener("mouseup", () => {
     onInputUp();
+});
+
+window.addEventListener("beforeunload", () => {
+    const data = saveProject();
+    sessionStorage.setItem("projectData", JSON.stringify(data));
 });
 
 //TODO: Add touch support
@@ -183,11 +191,11 @@ if (tutorialButton) tutorialButton.addEventListener("click", () => {
 });
 
 if (loadButton) loadButton.addEventListener("click", () => {
-    loadProject();
+    loadProjectFromFile();
 });
 
 if (saveButton) saveButton.addEventListener("click", () => {
-    saveProject();
+    saveProjectToFile();
 });
 
 if (imageButton) imageButton.addEventListener("click", async () => {
@@ -195,7 +203,7 @@ if (imageButton) imageButton.addEventListener("click", async () => {
 });
 
 if (addButton) addButton.addEventListener("click", () => {
-    const profileID = profileCount++;
+    const profileID = generateProfileID();
     const profile = createProfile(profileID);
     createProfileUI(profile);
     draw();
@@ -229,7 +237,15 @@ function createProfile(id) {
 }
 
 function removeProfile(id) {
-    profiles[id] = null;
+    const profilesIndex = profiles.findIndex(p => p != null && p.id === id);
+
+    if (profilesIndex > -1)
+        profiles.splice(profilesIndex, 1);
+
+    const profileUIIndex = profileUIElements.findIndex(p => p != null && p.id === id);
+
+    if (profileUIIndex > -1)
+        profileUIElements.splice(profileUIIndex, 1);
 }
 
 function setActiveProfileButton(id) {
@@ -267,14 +283,34 @@ function clearProfiles() {
     profiles = [];
     currentProfileID = 0;
     activeButton = null;
-    profileCount = 0;
+    currentGenerateProfileID = 0;
     while (container.firstChild)
         container.removeChild(container.firstChild);
 }
 
 /**
- *  Input
+ *  Input/Resize
  */
+
+function onResize() {
+    appCanvas.width = appCanvas.offsetWidth;
+    appCanvas.height = appCanvas.offsetHeight;
+
+    for (let i = 0; i < categoryCount; i++) {
+        let angle = getCategoryAngle(i, categoryCount);
+        let radius = getGraphRadius(appCanvas) + Constants.CATEGORY_UI_SIZE * 1.1;
+        let x = appCanvas.width / 2 + Math.cos(angle) * radius;
+        let y = appCanvas.height / 2 + Math.sin(angle) * radius;
+
+        categoryButtons[i].setPosition(x, y, radToDeg(angle) + 180);
+    }
+
+    if (tutorial != null)
+        tutorial.resize();
+
+    draw();
+}
+
 function onInputDown(x, y, size) {
     let currentProfile = profiles[currentProfileID];
 
@@ -297,7 +333,7 @@ function onInputDown(x, y, size) {
         const dx = inputX - handleX;
         const dy = inputY - handleY;
 
-        const handleRadius = (hoveredHandle == handle) ? handleRadiusHovered : handleRadiusNormal;
+        const handleRadius = (hoveredHandle == handle) ? Constants.HANDLE_RADIUS_HOVERED : Constants.HANDLE_RADIUS_NORMAL;
 
         if (dx * dx + dy * dy <= handleRadius * handleRadius + size * size) {
             draggedHandle = handle;
@@ -334,7 +370,7 @@ function onInputMove(x, y, size) {
             const dx = inputX - handleX;
             const dy = inputY - handleY;
 
-            const handleRadius = (hoveredHandle == handle) ? handleRadiusHovered : handleRadiusNormal;
+            const handleRadius = (hoveredHandle == handle) ? Constants.HANDLE_RADIUS_HOVERED : Constants.HANDLE_RADIUS_NORMAL;
 
             if (dx * dx + dy * dy <= handleRadius * handleRadius + size * size) {
                 newHoveredHandle = handle;
@@ -510,7 +546,7 @@ function draw(canvas = appCanvas) {
                 vertices.push({ angle, point: getCirclePoint(angle) });
             }
 
-            const circleAmountClamped = Math.max(0, Math.min(1, settings.scaleLineSmoothing));
+            const circleAmountClamped = Math.max(0, Math.min(1, Settings.scaleLineSmoothing));
             const samplesPerEdge = getSamplesPerEdge(categoryCount, circleAmountClamped);
             const firstArcPoint = lerpPoint(vertices[0].point, vertices[0].point, 0);
 
@@ -543,11 +579,11 @@ function draw(canvas = appCanvas) {
             ctx.closePath();
 
             if (isMain) {
-                ctx.lineWidth = 5;
+                ctx.lineWidth = Constants.LINE_SIZE_MAIN_SCALE;
                 ctx.strokeStyle = backgroundColor;
                 ctx.lineCap = "round";
             } else {
-                ctx.lineWidth = 3;
+                ctx.lineWidth = Constants.LINE_SIZE_SCALE;
                 ctx.strokeStyle = backgroundColor;
                 ctx.lineCap = "round";
             }
@@ -571,7 +607,7 @@ function draw(canvas = appCanvas) {
         }
 
         ctx.save();
-        ctx.lineWidth = 8;
+        ctx.lineWidth = Constants.LINE_SIZE_CORNER;
         ctx.strokeStyle = backgroundColor;
         ctx.fillStyle = backgroundColor;
         ctx.lineCap = "round";
@@ -590,14 +626,10 @@ function draw(canvas = appCanvas) {
             ctx.stroke();
 
             ctx.beginPath();
-            ctx.arc(x2, y2, 10, 0, 2 * Math.PI);
+            ctx.arc(x2, y2, Constants.CORNER_INDICATOR_RADIUS, 0, 2 * Math.PI);
             ctx.fill();
         }
 
-        ctx.fillStyle = backgroundColor;
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, 8, 0, 2 * Math.PI);
-        ctx.fill();
         ctx.restore();
     }
 
@@ -611,7 +643,7 @@ function draw(canvas = appCanvas) {
         const BORDER_COLOR = "black";
 
         function drawLines(isCurrentProfile, isBorder) {
-            const baseLineSize = isCurrentProfile ? lineSizeCurrentProfile : lineSizeOtherProfiles;
+            const baseLineSize = isCurrentProfile ? Constants.LINE_SIZE_CURRENT_PROFILE : Constants.LINE_SIZE_OTHER_PROFILE;
             ctx.strokeStyle = isBorder ? BORDER_COLOR : color;
             ctx.lineWidth = isBorder ? baseLineSize : baseLineSize - BORDER_SIZE * 2;
             ctx.beginPath();
@@ -628,10 +660,10 @@ function draw(canvas = appCanvas) {
             for (let i = 0; i < points.length; i++) {
                 const point = points[i];
 
-                let pointRadius = isCurrentProfile ? handleRadiusNormal : handleRadiusOtherProfiles;
+                let pointRadius = isCurrentProfile ? Constants.HANDLE_RADIUS_NORMAL : Constants.HANDLE_RADIUS_OTHER_PROFILE;
 
                 if (i == hoveredIndex && isCurrentProfile)
-                    pointRadius = handleRadiusHovered;
+                    pointRadius = Constants.HANDLE_RADIUS_HOVERED;
 
                 ctx.fillStyle = isBorder ? BORDER_COLOR : color;
                 ctx.beginPath();
@@ -645,12 +677,12 @@ function draw(canvas = appCanvas) {
         if (isHiddenCurrentProfile)
             ctx.globalAlpha = 0.6;
 
-        if (settings.showLinesBetweenDataPoints)
+        if (Settings.showLinesBetweenDataPoints)
             drawLines(isCurrentProfile, true);
 
         drawPoints(isCurrentProfile, true);
 
-        if (settings.showLinesBetweenDataPoints)
+        if (Settings.showLinesBetweenDataPoints)
             drawLines(isCurrentProfile, false);
 
         drawPoints(isCurrentProfile, false);
@@ -699,28 +731,33 @@ function draw(canvas = appCanvas) {
  * Save project (JSON)
  */
 
-function saveProject() {
-    const json = JSON.stringify({
-        profiles: profiles,
-        currentProfileID: currentProfileID,
-        activeCategoryCorners: categoryButtons.map(ui => ui.getActiveCornerIndex())
-    });
+function saveProjectToFile() {
+    const data = JSON.stringify(saveProject());
 
-    const blob = new Blob([json], { type: "application/json" });
+    const blob = new Blob([data], { type: "application/json" });
     const link = document.createElement("a");
 
     const url = URL.createObjectURL(blob);
     link.href = url;
-    link.download = "project.json";
+    link.download = "motivation.json";
     link.click();
     URL.revokeObjectURL(url);
+}
+
+function saveProject() {
+    const data = {
+        profiles: profiles,
+        currentProfileID: currentProfileID,
+        activeCategoryCorners: categoryButtons.map(ui => ui.getActiveCornerIndex())
+    };
+    return data;
 }
 
 /**
  * Load project (JSON)
  */
 
-function loadProject() {
+function loadProjectFromFile() {
     const input = document.createElement("input");
     input.type = "file";
     input.accept = ".json";
@@ -735,62 +772,67 @@ function loadProject() {
 
         reader.onload = function (evt) {
             const data = JSON.parse(evt.target.result);
-
-            if (data.profiles == null || !Array.isArray(data.profiles)) {
-                console.error("Invalid profiles data");
-
-                window.alert("Fehler beim Laden der Datei: Ungültige Profildaten.");
-                return;
-            }
-
-            if (data.currentProfileID == null || typeof data.currentProfileID !== "number" || data.currentProfileID < 0 || data.currentProfileID >= data.profiles.length) {
-                console.error("Invalid currentProfileID");
-                window.alert("Fehler beim Laden der Datei: Ungültige aktuelle Profil-ID.");
-                return;
-            }
-
-            if (data.activeCategoryCorners == null || !Array.isArray(data.activeCategoryCorners) || data.activeCategoryCorners.length !== categoryButtons.length) {
-                console.error("Invalid activeCategoryCorners data");
-                window.alert("Fehler beim Laden der Datei: Ungültige aktive Kategorien-Ecken.");
-                return;
-            }
-
-            profiles = [];
-
-            for (let i = 0; i < data.profiles.length; i++) {
-                const profileData = data.profiles[i];
-
-                if (profileData == null || profileData.id == null || typeof profileData.id !== "number") {
-                    console.error(`Invalid profile data at index ${i}: ${JSON.stringify(profileData)}`);
-                    window.alert(`Fehler beim Laden der Datei: Ungültige Profildaten bei Profil ${i}.`);
-                    profiles[i] = null;
-                    continue;
-                }
-
-                const profile = new Profile(profileData.id);
-                profile.isVisible = profileData.isVisible === true;
-                profile.dataPoints = Array.isArray(profileData.dataPoints) ? profileData.dataPoints : [];
-                profiles[profile.id] = profile;
-
-                createProfileUI(profile);
-            }
-
-            for (let i = 0; i < categoryButtons.length; i++) {
-                const cornerIndex = data.activeCategoryCorners[i];
-                if (cornerIndex == null || typeof cornerIndex !== "number" || cornerIndex < 0 || cornerIndex > 2) {
-                    console.error(`Invalid corner index for category button ${i}: ${cornerIndex}`);
-                    window.alert(`Fehler beim Laden der Datei: Ungültiger Eckenindex für Kategorie ${i}.`);
-                    continue;
-                }
-                categoryButtons[i].setActiveCornerIndex(cornerIndex);
-            }
-
-            setActiveProfileButton(data.currentProfileID);
-            draw();
+            loadProject(data);
         };
         reader.readAsText(file);
     };
     input.click();
+}
+
+function loadProject(data) {
+    if (data.profiles == null || !Array.isArray(data.profiles)) {
+        console.error("Invalid profiles data");
+
+        window.alert("Fehler beim Laden der Datei: Ungültige Profildaten.");
+        return;
+    }
+
+    if (data.currentProfileID == null || typeof data.currentProfileID !== "number") {
+        console.error("Invalid currentProfileID");
+        window.alert("Fehler beim Laden der Datei: Ungültige aktuelle Profil-ID.");
+        return;
+    }
+
+    if (data.activeCategoryCorners == null || !Array.isArray(data.activeCategoryCorners)) {
+        console.error("Invalid activeCategoryCorners data");
+        window.alert("Fehler beim Laden der Datei: Ungültige aktive Kategorien-Ecken.");
+        return;
+    }
+
+    profiles = [];
+
+    for (let i = 0; i < data.profiles.length; i++) {
+        const profileData = data.profiles[i];
+
+        if (profileData == null || profileData.id == null || typeof profileData.id !== "number") {
+            console.error(`Invalid profile data at index ${i}: ${JSON.stringify(profileData)}`);
+            window.alert(`Fehler beim Laden der Datei: Ungültige Profildaten bei Profil ${i}.`);
+            profiles[i] = null;
+            continue;
+        }
+
+        const profile = new Profile(profileData.id);
+        profile.isVisible = profileData.isVisible === true;
+        profile.dataPoints = Array.isArray(profileData.dataPoints) ? profileData.dataPoints : [];
+        profile.name = profileData.name;
+
+        profiles[profile.id] = profile;
+
+        createProfileUI(profile);
+    }
+
+    for (let i = 0; i < categoryButtons.length; i++) {
+        const cornerIndex = data.activeCategoryCorners[i];
+        if (cornerIndex == null || typeof cornerIndex !== "number" || cornerIndex < 0 || cornerIndex > 2) {
+            console.error(`Invalid corner index for category button ${i}: ${cornerIndex}`);
+            window.alert(`Fehler beim Laden der Datei: Ungültiger Eckenindex für Kategorie ${i}.`);
+            continue;
+        }
+        categoryButtons[i].setActiveCornerIndex(cornerIndex);
+    }
+
+    setActiveProfileButton(data.currentProfileID);
+    draw();
 }
 
 /**
@@ -820,10 +862,12 @@ async function saveAsImage() {
             if (profile == null)
                 continue;
 
-            if (!profile.ui)
+            const ui = profileUIElements[profile.id];
+
+            if (!ui)
                 continue;
 
-            profile.ui.setPrintMode(isPrintMode);
+            ui.setPrintMode(isPrintMode);
         }
     }
 
@@ -910,9 +954,9 @@ class ProfileUI {
         this.wrapper.dataset.profileId = profile.id;
         parent.appendChild(this.wrapper);
 
-        const button = document.createElement("div");
-        button.className = "profile-ui";
-        button.dataset.id = profile.id;
+        const buttonElement = document.createElement("div");
+        buttonElement.className = "profile-ui";
+        buttonElement.dataset.id = profile.id;
 
         const colorBox = document.createElement("div");
         colorBox.className = "color-box";
@@ -923,6 +967,9 @@ class ProfileUI {
         textField.className = "text-field";
         textField.placeholder = `Name eingeben...`;
 
+        if (profile.name != null)
+            textField.value = profile.name;
+
         const iconsContainer = document.createElement("div");
         iconsContainer.className = "icons";
 
@@ -931,11 +978,11 @@ class ProfileUI {
         const iconStates = {
             visible: {
                 alwaysVisible: true,
-                booleanState: true,
+                booleanState: profile.isVisible,
                 setTrue: {
                     normal: "resources/visible_icon.png",
-                    hover: "resources/visible_hovered_icon.png",
-                    active: "resources/visible_pressed_icon.png",
+                    hover: "resources/visible_icon.png",
+                    active: "resources/visible_icon.png",
                     callback: (_button, state) => {
                         profile.isVisible = state;
                         draw();
@@ -943,8 +990,8 @@ class ProfileUI {
                 },
                 setFalse: {
                     normal: "resources/invisible_icon.png",
-                    hover: "resources/invisible_hovered_icon.png",
-                    active: "resources/invisible_pressed_icon.png",
+                    hover: "resources/invisible_icon.png",
+                    active: "resources/invisible_icon.png",
                     callback: (_button, state) => {
                         profile.isVisible = state;
                         draw();
@@ -1025,25 +1072,25 @@ class ProfileUI {
                     image.src = iconButton._currentSet.active;
 
                 if (iconButton._currentSet.callback)
-                    iconButton._currentSet.callback(button, states.booleanState);
+                    iconButton._currentSet.callback(buttonElement, states.booleanState);
             });
         });
 
-        button.appendChild(colorBox);
-        button.appendChild(textField);
-        button.appendChild(iconsContainer);
-        this.wrapper.appendChild(button);
+        buttonElement.appendChild(colorBox);
+        buttonElement.appendChild(textField);
+        buttonElement.appendChild(iconsContainer);
+        this.wrapper.appendChild(buttonElement);
 
-        button.addEventListener("mouseenter", () => { if (!button.classList.contains("active")) button.classList.add("expanded"); });
-        button.addEventListener("mouseleave", () => { if (!button.classList.contains("active")) button.classList.remove("expanded"); });
-        button.addEventListener("click", e => {
+        buttonElement.addEventListener("mouseenter", () => { if (!buttonElement.classList.contains("active")) buttonElement.classList.add("expanded"); });
+        buttonElement.addEventListener("mouseleave", () => { if (!buttonElement.classList.contains("active")) buttonElement.classList.remove("expanded"); });
+        buttonElement.addEventListener("click", e => {
             if (e.target !== textField) {
                 setActiveProfileButton(profile.id);
                 draw();
             }
         });
 
-        button.setBooleanIcon = (iconName, boolValue) => {
+        buttonElement.setBooleanIcon = (iconName, boolValue) => {
             const iconButton = iconButtons[iconName];
             if (!iconButton)
                 return;
@@ -1073,6 +1120,7 @@ class ProfileUI {
 
         textField.addEventListener("input", () => {
             printTextField.textContent = textField.value || "Kein Name";
+            profile.name = textField.value;
         });
     }
 
@@ -1091,7 +1139,7 @@ function createProfileUI(profile) {
     if (container.children.length === 1)
         setActiveProfileButton(profile.id);
 
-    profile.ui = ui;
+    profileUIElements[profile.id] = ui;
 
     return ui;
 };
@@ -1142,7 +1190,7 @@ class CategoryUI {
             const labelData = cornerLabels[i] || { title: "Missing corner " + i, description: "" };
             label.innerHTML = `<div class="title">${labelData.title}</div><div class="description">${labelData.description}</div>`;
             const normal = shadeColor(this.color, -20);
-            const hover = shadeColor(this.color, 10);
+            const hover = shadeColor(this.color, -10);
             label.style.background = normal;
 
             label.addEventListener("mouseenter", () => {
@@ -1251,7 +1299,7 @@ class CategoryUI {
         ctx.lineTo(corners[1].x, corners[1].y);
         ctx.lineTo(corners[2].x, corners[2].y);
         ctx.closePath();
-        ctx.lineWidth = 4;
+        ctx.lineWidth = Constants.CATEGORY_UI_LINE_SIZE;
         ctx.strokeStyle = this.color;
         ctx.stroke();
 
@@ -1290,7 +1338,7 @@ function createCategoryUI(x, y, size, rotation, color, labels, centerText) {
 
 class TutorialUI {
     constructor() {
-        this.currentStep = 0;
+        this.currentStep = -1;
 
         this.overlay = document.createElement('div');
         this.overlay.className = 'tutorial-overlay';
@@ -1331,12 +1379,18 @@ class TutorialUI {
     startTutorial(steps) {
         this.steps = steps;
         this.overlay.style.display = 'block';
+        this.currentStep = 0;
         this.showStep(this.currentStep);
     }
 
     endTutorial() {
         this.overlay.style.display = 'none';
-        this.currentStep = 0;
+        this.currentStep = -1;
+    }
+
+    resize() {
+        if (this.currentStep >= 0)
+            this.showStep(this.currentStep);
     }
 
     showStep(index) {
@@ -1349,7 +1403,7 @@ class TutorialUI {
             return;
 
         const rect = element.getBoundingClientRect();
-        const padding = 10;
+        const padding = 5;
         const highlightWidthScaling = step.widthScaling != null ? step.widthScaling : 1.0;
         const highlightHeightScaling = step.heightScaling != null ? step.heightScaling : 1.0;
 
@@ -1364,17 +1418,17 @@ class TutorialUI {
         this.highlightBox.style.height = (highlightHeight + padding * 2) + 'px';
 
         this.tooltip.style.position = 'fixed';
-        let tooltipTop = highlightTop + highlightHeight + 10;
+        let tooltipTop = highlightTop + highlightHeight + padding * 2 + padding * 0.5;
         let tooltipLeft = highlightLeft;
 
-        const tooltipWidth = 280;
-        const tooltipHeight = 100;
+        const tooltipWidth = remToPx(25);
+        const tooltipHeight = remToPx(10);
 
-        if (tooltipLeft + tooltipWidth > window.innerWidth - 10)
-            tooltipLeft = window.innerWidth - tooltipWidth - 10;
+        if (tooltipLeft + tooltipWidth > window.innerWidth - padding * 2)
+            tooltipLeft = window.innerWidth - tooltipWidth - padding * 2;
 
         if (tooltipTop + tooltipHeight > window.innerHeight)
-            tooltipTop = highlightTop - tooltipHeight - 10;
+            tooltipTop = highlightTop - tooltipHeight - padding * 2;
 
         this.tooltip.style.top = tooltipTop + 'px';
         this.tooltip.style.left = tooltipLeft + 'px';
@@ -1489,7 +1543,7 @@ function getCategoryAngle(index, count) {
 }
 
 function getGraphRadius(canvas) {
-    return Math.min(canvas.width, canvas.height) / 2 - categoryUISize * 2;
+    return Math.min(canvas.width, canvas.height) / 2 - Constants.CATEGORY_UI_SIZE * 2;
 }
 
 function getProfileColor(index, step = 137.508) {
@@ -1497,4 +1551,18 @@ function getProfileColor(index, step = 137.508) {
     const saturation = 80;
     const lightness = 40;
     return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+}
+
+function remToPx(rem) {
+    const remInPx = parseFloat(getComputedStyle(document.documentElement).fontSize);
+    return rem * remInPx;
+}
+
+function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
+}
+
+function generateProfileID() {
+    const id = profiles.length;
+    return id;
 }

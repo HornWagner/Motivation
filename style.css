@@ -53,10 +53,10 @@ html {
 
 .topControls {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 0.3rem;
+  right: 0.3rem;
   display: flex;
-  gap: 10px;
+  gap: 0.2rem;
   z-index: 2;
 }
 
@@ -66,12 +66,13 @@ html {
   */
 
 .icon-button {
-  width: 60px;
-  height: 60px;
+  width: 5rem;
+  height: 5rem;
   border: none;
   background: none;
   cursor: pointer;
   padding: 0;
+  overflow: hidden;
 }
 
 .icon-button img {
@@ -91,9 +92,9 @@ html {
   width: max-content;
 
   position: absolute;
-  top: 80px;
-  right: 20px;
-  bottom: 20px;
+  top: 6.5rem;
+  right: 0;
+  bottom: 0;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -101,7 +102,7 @@ html {
 #profileButtons {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 1rem;
 }
 
 /**
@@ -116,20 +117,20 @@ html {
 .profile-ui {
   display: flex;
   align-items: center;
-  width: 250px;
+  width: 17rem;
   margin-left: auto;
   background: white;
-  border-radius: 6px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  border-radius: 0.5rem;
+  box-shadow: 0 0.4rem 0.5rem rgba(0, 0, 0, 0.15);
   cursor: pointer;
   padding-right: 0;
   transition: width 0.3s ease, box-shadow 0.3s ease;
-  border: 2px solid transparent;
+  border: 0.15rem solid transparent;
 }
 
 .profile-ui.expanded,
 .profile-ui.active {
-  width: 300px;
+  width: 20rem;
 }
 
 .profile-ui.active {
@@ -137,26 +138,26 @@ html {
 }
 
 .profile-ui .color-box {
-  width: 42px;
-  height: 42px;
+  width: 3rem;
+  height: 3rem;
   flex-shrink: 0;
-  border-radius: 4px 0 0 4px;
+  border-radius: 0.4rem 0 0 0.4rem;
 }
 
 .profile-ui .text-field {
   border: none;
   outline: none;
-  padding: 8px;
-  font-size: 18px;
+  padding: 0.5rem;
+  font-size: 1rem;
   flex: 1;
-  min-width: 80px;
-  max-width: 150px;
+  min-width: 10rem;
+  max-width: 15rem;
 }
 
 .profile-ui .icons {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.1rem;
 }
 
 .profile-ui .icons button {
@@ -165,7 +166,7 @@ html {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 5px;
+  padding: 0.3rem;
   transition: opacity 0.3s ease;
 }
 
@@ -177,8 +178,8 @@ html {
 }
 
 .profile-ui .icons img {
-  width: 28px;
-  height: 28px;
+  width: 2rem;
+  height: 2rem;
   object-fit: contain;
   transition: transform 0.2s ease;
 }
@@ -188,35 +189,36 @@ html {
 }
 
 .profile-ui-print-element {
-  display: grid;
+  display: flex;
   align-items: center;
-  width: 100%;
+  flex-wrap: nowrap;
+  width: 17rem;
   margin-left: auto;
   background: white;
-  border-radius: 6px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  border-radius: 0.5rem;
+  box-shadow: 0 0.4rem 0.5rem rgba(0, 0, 0, 0.15);
+  cursor: pointer;
   padding-right: 0;
-  border: 2px solid transparent;
+  transition: width 0.3s ease, box-shadow 0.3s ease;
+  border: 0.15rem solid transparent;
 }
 
 .profile-ui-print-element .color-box {
-  width: 42px;
-  height: 42px;
+  width: 3rem;
+  height: 3rem;
   flex-shrink: 0;
-  border-radius: 8px 8px 8px 8px;
-  grid-row: 0;
-  grid-column: 0;
+  border-radius: 0.4rem 0 0 0.4rem;
 }
 
 .profile-ui-print-element .text-field {
+  display: flex;
   border: none;
   outline: none;
-  padding: 8px;
-  font-size: 18px;
-  min-width: 80px;
-  max-width: 150px;
-  grid-row: 0;
-  grid-column: 1;
+  padding: 0.5rem;
+  font-size: 1rem;
+  flex: 1;
+  min-width: 4rem;
+  max-width: 15rem;
 }
 
 .profile-ui-print-element {
@@ -228,7 +230,7 @@ html {
 }
 
 .profile-ui-wrapper.print-mode .profile-ui-print-element {
-  display: block !important;
+  display: flex;
 }
 
 /**
@@ -256,23 +258,23 @@ html {
   position: absolute;
   z-index: 1;
   transform: translate(-50%, -50%);
-  border-radius: 8px;
-  padding: 6px 8px;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.5rem;
   background: #b6b6b6be;
   color: #1a1a1a;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 1.5rem;
   pointer-events: none;
 }
 
 .category-ui-print-label {
   position: absolute;
   z-index: 1;
-  border-radius: 8px;
-  padding: 6px 8px;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.5rem;
   color: #ffffff;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 1.5rem;
   pointer-events: none;
 }
 
@@ -283,18 +285,18 @@ html {
 }
 
 .category-ui-label {
+  display: block;
   position: absolute;
   z-index: 2;
   transform: translate(-50%, -50%);
-  border-radius: 8px;
-  width: 60px;
+  border-radius: 0.5rem;
+  width: 6rem;
   overflow: hidden;
   text-align: center;
-  padding: 6px 8px;
+  padding: 0.5rem 0.5rem;
   color: #ffffff;
-  font-size: 14px;
+  font-size: 1.25rem;
   cursor: pointer;
-  line-height: 1.3;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -312,27 +314,30 @@ html {
   text-overflow: ellipsis;
   width: 100%;
   font-weight: 600;
+  flex-shrink: 0;
 }
 
 .category-ui-label .description {
-  opacity: 0;
-  font-size: 14px;
-  margin-top: 4px;
-  max-height: 0;
+  display: none;
+  font-size: 1rem;
+  margin-top: 0.2rem;
   overflow: hidden;
-  transition: opacity 0.25s ease, max-height 0.25s ease;
+  flex: 1;
+  width: 100%;
+  max-height: 100%;
 }
 
 .category-ui-label.expanded {
-  width: 200px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  display: flex;
+  width: min-content;
+  min-width: 15rem;
+  box-shadow: 0 0.5rem 0.8rem rgba(0, 0, 0, 0.25);
   transform: translate(-50%, -50%) scale(1.05);
   z-index: 999;
 }
 
 .category-ui-label.expanded .description {
-  opacity: 0.85;
-  max-height: 200px;
+  display: block;
 }
 
 .category-ui-container .category-ui-print-label {
@@ -362,9 +367,9 @@ html {
 .tutorial-highlight-box {
   position: fixed;
   background: rgba(255, 255, 255, 0.1);
-  border: 2px solid #fff;
-  border-radius: 8px;
-  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
+  border: 0.2rem solid #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 0 100% rgba(0, 0, 0, 0.6);
   pointer-events: none;
   transition: all 0.4s ease;
 }
@@ -374,9 +379,9 @@ html {
   background: white;
   color: black;
   padding: 1rem;
-  border-radius: 8px;
-  max-width: 280px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-radius: 0.5rem;
+  max-width: 25rem;
+  box-shadow: 0 0.5rem 0.8rem rgba(0, 0, 0, 0.3);
   transition: all 0.4s ease;
 }
 
@@ -391,7 +396,7 @@ html {
   border: none;
   color: white;
   padding: 0.5rem 1rem;
-  border-radius: 6px;
+  border-radius: 0.5rem;
   cursor: pointer;
 }
 
