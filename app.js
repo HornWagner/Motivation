@@ -889,7 +889,7 @@ async function saveAsImage() {
         displayHeight *= scale;
 
         swal.fire({
-            title: 'Preview',
+            title: 'Vorschaubild',
             html: `<img src="${dataUrl}" width="${displayWidth}" height="${displayHeight}" style="display:block; margin:auto; border-radius:10px; border:1px solid #ccc;" />`,
             showCancelButton: true,
             confirmButtonText: 'Speichern',
